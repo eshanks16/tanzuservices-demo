@@ -1,4 +1,6 @@
-# tanzuservices-demo
+# Tanzu Services Demo
+
+
 ## Overview
 The items contained within this repository are used for demonstrating Tanzu services in a 
 VMware Cloud environment.
