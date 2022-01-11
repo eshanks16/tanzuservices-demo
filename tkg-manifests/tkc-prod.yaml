@@ -1,0 +1,41 @@
+apiVersion: run.tanzu.vmware.com/v1alpha2
+kind: TanzuKubernetesCluster
+metadata:
+  name: TANZU_KUBERNETES_CLUSTER
+  namespace: VSPHERE_NAMESPACE
+spec:
+  topology:
+    controlPlane:
+      tkr:
+        reference:
+          name: v1.20.7---vmware.1-tkg.1.7fb9067
+      replicas: 3
+      vmClass: best-effort-medium
+      storageClass: vmc-workload-storage-policy-cluster-1
+    nodePools:
+    - replicas: 3
+      name: np-1
+      vmClass: best-effort-medium
+      storageClass: vmc-workload-storage-policy-cluster-1
+      labels:
+        k1: v1
+        k2: v2
+      taints:
+      - key: k1
+        value: v1
+        effect: NoSchedule
+    - replicas: 3
+      name: np-2
+      vmClass: best-effort-medium
+      storageClass: vmc-workload-storage-policy-cluster-1
+  settings:
+    network:
+      cni:
+        name: calico
+      services:
+        cidrBlocks:
+        - 198.51.100.0/12
+      pods:
+        cidrBlocks:
+        - 192.0.2.0/16
+      serviceDomain: cluster.local

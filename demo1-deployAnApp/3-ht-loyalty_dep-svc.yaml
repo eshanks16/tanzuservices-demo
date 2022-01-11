@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment                 
+metadata:
+  name: hardtop-loyalty  
+  namespace: loyalty         
+spec:
+  replicas: 3                    
+  selector:
+    matchLabels:
+      app: hardtop-loyalty
+  template:                      
+    metadata:
+      labels:                    
+        app: hardtop-loyalty 
+    spec:                        
+      containers:
+      - name: hardtop-loyalty
+        image: public.ecr.aws/u2s8y8w6/loyalty:1.8
+        env:
+        - name: MONGO_HOST
+          value: "mongo"
+        - name: MONGO_PORT
+          value: "27017"
+        - name: MONGO_USER
+          value: root
+        - name: MONGO_PASS
+          value: "VMware1!"
+        - name: MONGO_TLS
+          value: "" #Anything other than "" forces TLS on the connection
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080  
+        livenessProbe:           
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:   
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 1    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loyalty-svc
+  namespace: loyalty
+  labels:
+    app: hardtop-loyalty
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP
+  selector:
+    app: hardtop-loyalty
